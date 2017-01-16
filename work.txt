@@ -1,0 +1,7 @@
+
+2 可选题 ，完成支持Java注解+泛型注入的一个Ioc框架，
+        LdIocFactory factory=new LdIocFactory();
+        factory.scanPackages(new String[]{xx,xxxx}});
+        factory.getBean(xxx.class);
+
+         完成课程上的User,Dao,Service 泛型扫描注入的能力
