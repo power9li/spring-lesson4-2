@@ -5,6 +5,7 @@ import com.power.spring.annotations.MyComponent;
 import com.power.spring.utils.PackageScanner;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.HashMap;
@@ -25,6 +26,8 @@ public class LdIocFactory {
             Set<Class<?>> fileClass = PackageScanner.findFileClass(packageName);
             for (Class clazz : fileClass) {
                 if (clazz.isAnnotationPresent(MyComponent.class)) {
+
+                    //TODO: 其它设值方式的实现
 //                    Method[] declaredMethods = clazz.getDeclaredMethods();
 
                     MyBean mb = new MyBean();
@@ -73,26 +76,30 @@ public class LdIocFactory {
                     Class<?> type = field.getType();
                     Type fieldGenericType = field.getGenericType();
 
+                    //泛型方式依赖注入
                     if(fieldGenericType instanceof ParameterizedType) {
 
                         for (Class beanMapClazz : clazzBeanMap.keySet()) {
+                            //判断field字段类型是否与beanMap中类型匹配
                             if (type.isAssignableFrom(beanMapClazz)) {
                                 MyBean dependencyBean = clazzBeanMap.get(beanMapClazz);
                                 Type beanMapGenericType = dependencyBean.getGenericType();
+                                //并且泛型<T>也匹配
                                 if (beanMapGenericType.equals(bean.getGenericType())) {
                                     System.out.println(type + "<" + beanMapGenericType.getTypeName() + ">.isAssignableFrom(" + beanMapClazz + "<" + bean.getGenericType().getTypeName() + ">)");
                                     field.setAccessible(true);
+                                    //设置参数
                                     field.set(bean.getTargetObject(), dependencyBean.getTargetObject());
                                 }
                             }
                         }
                     }
+                    //TODO:非泛型方式的依赖注入实现
                     else if(fieldGenericType.equals(Integer.class)){
-
+                        //...
+                    } else if (fieldGenericType instanceof GenericArrayType) {
+                        //...
                     }
-
-
-
 
                 }
             }
